@@ -75,6 +75,7 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       const t = window.setTimeout(() => siguiente(), 4000);
       return () => window.clearTimeout(t);
     }
+    return undefined;
   }, [restante, estado, siguiente]);
 
   const comprobar = useCallback(
