@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import triste from "@/assets/triste.png";
 import { Celebracion } from "@/components/Celebracion";
 import { FRASES, mezclar, type Frase } from "@/lib/game-data";
 import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
