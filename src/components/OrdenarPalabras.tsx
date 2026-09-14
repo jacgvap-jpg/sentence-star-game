@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import triste from "@/assets/triste.png";
 import { Celebracion } from "@/components/Celebracion";
-import { FRASES, mezclar, type Frase } from "@/lib/game-data";
+import { FRASES_VALIDAS, mezclar, type Frase } from "@/lib/game-data";
 import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
 
 const SEGUNDOS = 70;
 
 function frasesMezcladas(): Frase[] {
-  return mezclar(FRASES);
+  return mezclar(FRASES_VALIDAS);
 }
 
 function desordenar(palabras: string[]): string[] {
@@ -31,7 +31,7 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
   const [seleccion, setSeleccion] = useState<number | null>(null);
   const arrastrando = useRef<number | null>(null);
 
-  const frase = cola[indice] ?? FRASES[0]!;
+  const frase = cola[indice] ?? FRASES_VALIDAS[0]!;
 
   const cargar = useCallback((f: Frase) => {
     setOrden(desordenar(f.palabras));
