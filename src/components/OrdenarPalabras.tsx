@@ -3,7 +3,7 @@ import { Celebracion } from "@/components/Celebracion";
 import { FRASES, mezclar, type Frase } from "@/lib/game-data";
 import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
 
-const SEGUNDOS = 40;
+const SEGUNDOS = 70;
 
 function frasesMezcladas(): Frase[] {
   return mezclar(FRASES);
