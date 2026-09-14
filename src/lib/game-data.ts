@@ -52,11 +52,18 @@ export const FRASES: Frase[] = [
   },
   {
     id: "libro",
-    palabras: ["LA", "NIÑA", "LEE", "UN", "LIBRO", "EN", "LA", "CAMA"].slice(0, 7),
+    palabras: ["LA", "NIÑA", "LEE", "UN", "LIBRO", "EN", "LA", "CAMA"],
     imagen: libro,
     alt: "Una niña leyendo un libro en la cama",
   },
 ];
+
+export const MAX_PALABRAS = 8;
+
+/** Solo frases con sentido y con 4 a 8 palabras. */
+export const FRASES_VALIDAS: Frase[] = FRASES.filter(
+  (f) => f.palabras.length >= 4 && f.palabras.length <= MAX_PALABRAS,
+);
 
 export const NOMBRES = ["Pablo", "María", "Lucas", "Mauro", "Mariana", "Teresa", "Daniel"];
 
