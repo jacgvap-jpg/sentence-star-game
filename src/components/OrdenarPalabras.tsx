@@ -42,16 +42,16 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
   useEffect(() => {
     cargar(frase);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frase.id]);
+  }, [ronda]);
 
   const siguiente = useCallback(() => {
-    if (indice + 1 < cola.length) {
-      setIndice(indice + 1);
-    } else {
+    setIndice((i) => {
+      if (i + 1 < cola.length) return i + 1;
       setCola(frasesMezcladas());
-      setIndice(0);
-    }
-  }, [indice, cola.length]);
+      return 0;
+    });
+    setRonda((r) => r + 1);
+  }, [cola.length]);
 
   // Temporizador
   useEffect(() => {
@@ -66,18 +66,22 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       });
     }, 1000);
     return () => window.clearInterval(id);
-  }, [estado, frase.id]);
+  }, [estado, ronda]);
 
   useEffect(() => {
     if (estado === "jugando" && restante === 0) {
       setEstado("tiempo");
       sonidoAlarma();
       hablar("¡Tiempo agotado!", false);
-      const t = window.setTimeout(() => siguiente(), 4000);
-      return () => window.clearTimeout(t);
     }
-    return undefined;
-  }, [restante, estado, siguiente]);
+  }, [restante, estado]);
+
+  // Pasa a palabras nuevas tras mostrar "Tiempo agotado"
+  useEffect(() => {
+    if (estado !== "tiempo") return;
+    const t = window.setTimeout(() => siguiente(), 4000);
+    return () => window.clearTimeout(t);
+  }, [estado, siguiente]);
 
   const comprobar = useCallback(
     (nuevo: string[]) => {
