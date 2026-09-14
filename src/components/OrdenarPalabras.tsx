@@ -1,14 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import triste from "@/assets/triste.png";
 import { Celebracion } from "@/components/Celebracion";
-import { FRASES_VALIDAS, mezclar, type Frase } from "@/lib/game-data";
+import { NIVELES, frasesDeNivel, mezclar, type Frase, type Nivel } from "@/lib/game-data";
 import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
-
-const SEGUNDOS = 70;
-
-function frasesMezcladas(): Frase[] {
-  return mezclar(FRASES_VALIDAS);
-}
 
 function desordenar(palabras: string[]): string[] {
   const objetivo = palabras.join(" ");
@@ -21,24 +15,40 @@ function desordenar(palabras: string[]): string[] {
 
 type Estado = "jugando" | "acierto" | "tiempo";
 
-export function OrdenarPalabras({ nombre }: { nombre: string }) {
+export function OrdenarPalabras({
+  nombre,
+  nivel,
+  onCambiarNivel,
+}: {
+  nombre: string;
+  nivel: Nivel;
+  onCambiarNivel: () => void;
+}) {
+  const datosNivel = NIVELES.find((n) => n.id === nivel) ?? NIVELES[1]!;
+  const segundosNivel = datosNivel.segundos;
+
+  const frasesMezcladas = useCallback((): Frase[] => mezclar(frasesDeNivel(nivel)), [nivel]);
+
   const [cola, setCola] = useState<Frase[]>(() => frasesMezcladas());
   const [indice, setIndice] = useState(0);
   const [ronda, setRonda] = useState(0);
   const [orden, setOrden] = useState<string[]>([]);
   const [estado, setEstado] = useState<Estado>("jugando");
-  const [restante, setRestante] = useState(SEGUNDOS);
+  const [restante, setRestante] = useState(segundosNivel);
   const [seleccion, setSeleccion] = useState<number | null>(null);
   const arrastrando = useRef<number | null>(null);
 
-  const frase = cola[indice] ?? FRASES_VALIDAS[0]!;
+  const frase = cola[indice] ?? frasesDeNivel(nivel)[0]!;
 
-  const cargar = useCallback((f: Frase) => {
-    setOrden(desordenar(f.palabras));
-    setRestante(SEGUNDOS);
-    setEstado("jugando");
-    setSeleccion(null);
-  }, []);
+  const cargar = useCallback(
+    (f: Frase) => {
+      setOrden(desordenar(f.palabras));
+      setRestante(segundosNivel);
+      setEstado("jugando");
+      setSeleccion(null);
+    },
+    [segundosNivel],
+  );
 
   useEffect(() => {
     cargar(frase);
@@ -52,7 +62,7 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       return 0;
     });
     setRonda((r) => r + 1);
-  }, [cola.length]);
+  }, [cola.length, frasesMezcladas]);
 
   // Temporizador
   useEffect(() => {
@@ -133,6 +143,16 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
         <div>
           <h1 className="text-3xl font-extrabold text-primary sm:text-4xl">Ordenar Palabras</h1>
           <p className="mt-1 text-lg font-bold text-muted-foreground">¡Vamos, {nombre}!</p>
+          <button
+            type="button"
+            onClick={() => {
+              sonidoClic();
+              onCambiarNivel();
+            }}
+            className="mt-2 rounded-xl bg-secondary px-4 py-2 text-base font-extrabold text-secondary-foreground shadow-bloque active:translate-y-1"
+          >
+            {datosNivel.emoji} Nivel {datosNivel.titulo} · cambiar
+          </button>
         </div>
         <div
           className={`rounded-2xl border-4 border-primary bg-card px-5 py-3 text-center shadow-tarjeta ${
@@ -214,14 +234,24 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
           <p className="mt-4 font-display text-2xl font-extrabold uppercase text-primary sm:text-3xl">
             {frase.palabras.join(" ")}
           </p>
-          <img
-            src={frase.imagen}
-            alt={frase.alt}
-            width={1024}
-            height={768}
-            loading="lazy"
-            className="mx-auto mt-5 w-full max-w-xl rounded-2xl border-4 border-primary"
-          />
+          {frase.imagen ? (
+            <img
+              src={frase.imagen}
+              alt={frase.alt}
+              width={1024}
+              height={768}
+              loading="lazy"
+              className="mx-auto mt-5 w-full max-w-xl rounded-2xl border-4 border-primary"
+            />
+          ) : (
+            <div
+              role="img"
+              aria-label={frase.alt}
+              className="mx-auto mt-5 flex w-full max-w-xl items-center justify-center rounded-2xl border-4 border-primary bg-muted py-10 text-8xl sm:text-9xl"
+            >
+              {frase.emoji ?? "⭐"}
+            </div>
+          )}
           <button
             type="button"
             onClick={siguiente}
