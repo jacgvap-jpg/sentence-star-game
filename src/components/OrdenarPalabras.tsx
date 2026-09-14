@@ -23,6 +23,7 @@ type Estado = "jugando" | "acierto" | "tiempo";
 export function OrdenarPalabras({ nombre }: { nombre: string }) {
   const [cola, setCola] = useState<Frase[]>(() => frasesMezcladas());
   const [indice, setIndice] = useState(0);
+  const [ronda, setRonda] = useState(0);
   const [orden, setOrden] = useState<string[]>([]);
   const [estado, setEstado] = useState<Estado>("jugando");
   const [restante, setRestante] = useState(SEGUNDOS);
