@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import triste from "@/assets/triste.png";
 import { Celebracion } from "@/components/Celebracion";
 import { FRASES, mezclar, type Frase } from "@/lib/game-data";
 import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
@@ -23,6 +24,7 @@ type Estado = "jugando" | "acierto" | "tiempo";
 export function OrdenarPalabras({ nombre }: { nombre: string }) {
   const [cola, setCola] = useState<Frase[]>(() => frasesMezcladas());
   const [indice, setIndice] = useState(0);
+  const [ronda, setRonda] = useState(0);
   const [orden, setOrden] = useState<string[]>([]);
   const [estado, setEstado] = useState<Estado>("jugando");
   const [restante, setRestante] = useState(SEGUNDOS);
@@ -41,16 +43,16 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
   useEffect(() => {
     cargar(frase);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frase.id]);
+  }, [ronda]);
 
   const siguiente = useCallback(() => {
-    if (indice + 1 < cola.length) {
-      setIndice(indice + 1);
-    } else {
+    setIndice((i) => {
+      if (i + 1 < cola.length) return i + 1;
       setCola(frasesMezcladas());
-      setIndice(0);
-    }
-  }, [indice, cola.length]);
+      return 0;
+    });
+    setRonda((r) => r + 1);
+  }, [cola.length]);
 
   // Temporizador
   useEffect(() => {
@@ -65,18 +67,22 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       });
     }, 1000);
     return () => window.clearInterval(id);
-  }, [estado, frase.id]);
+  }, [estado, ronda]);
 
   useEffect(() => {
     if (estado === "jugando" && restante === 0) {
       setEstado("tiempo");
       sonidoAlarma();
       hablar("¡Tiempo agotado!", false);
-      const t = window.setTimeout(() => siguiente(), 4000);
-      return () => window.clearTimeout(t);
     }
-    return undefined;
-  }, [restante, estado, siguiente]);
+  }, [restante, estado]);
+
+  // Pasa a palabras nuevas tras mostrar "Tiempo agotado"
+  useEffect(() => {
+    if (estado !== "tiempo") return;
+    const t = window.setTimeout(() => siguiente(), 4000);
+    return () => window.clearTimeout(t);
+  }, [estado, siguiente]);
 
   const comprobar = useCallback(
     (nuevo: string[]) => {
@@ -180,13 +186,23 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       </ul>
 
       {estado === "tiempo" && (
-        <div className="mt-10 animar-temblor rounded-3xl bg-destructive px-6 py-8 text-center shadow-tarjeta">
-          <p className="font-display text-4xl font-extrabold uppercase text-destructive-foreground sm:text-6xl">
-            Tiempo agotado
-          </p>
-          <p className="mt-3 text-lg font-bold text-destructive-foreground">
-            Preparando palabras nuevas…
-          </p>
+        <div className="mt-10 animar-temblor flex flex-col items-center justify-center gap-5 rounded-3xl bg-destructive px-6 py-8 text-center shadow-tarjeta sm:flex-row sm:gap-8">
+          <img
+            src={triste}
+            alt="Carita triste con lágrimas en los ojos"
+            width={768}
+            height={768}
+            loading="lazy"
+            className="h-32 w-32 shrink-0 sm:h-40 sm:w-40"
+          />
+          <div>
+            <p className="font-display text-4xl font-extrabold uppercase text-destructive-foreground sm:text-6xl">
+              Tiempo agotado
+            </p>
+            <p className="mt-3 text-lg font-bold text-destructive-foreground">
+              Preparando palabras nuevas…
+            </p>
+          </div>
         </div>
       )}
 
