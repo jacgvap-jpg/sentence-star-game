@@ -185,13 +185,23 @@ export function OrdenarPalabras({ nombre }: { nombre: string }) {
       </ul>
 
       {estado === "tiempo" && (
-        <div className="mt-10 animar-temblor rounded-3xl bg-destructive px-6 py-8 text-center shadow-tarjeta">
-          <p className="font-display text-4xl font-extrabold uppercase text-destructive-foreground sm:text-6xl">
-            Tiempo agotado
-          </p>
-          <p className="mt-3 text-lg font-bold text-destructive-foreground">
-            Preparando palabras nuevas…
-          </p>
+        <div className="mt-10 animar-temblor flex flex-col items-center justify-center gap-5 rounded-3xl bg-destructive px-6 py-8 text-center shadow-tarjeta sm:flex-row sm:gap-8">
+          <img
+            src={triste}
+            alt="Carita triste con lágrimas en los ojos"
+            width={768}
+            height={768}
+            loading="lazy"
+            className="h-32 w-32 shrink-0 sm:h-40 sm:w-40"
+          />
+          <div>
+            <p className="font-display text-4xl font-extrabold uppercase text-destructive-foreground sm:text-6xl">
+              Tiempo agotado
+            </p>
+            <p className="mt-3 text-lg font-bold text-destructive-foreground">
+              Preparando palabras nuevas…
+            </p>
+          </div>
         </div>
       )}
 
