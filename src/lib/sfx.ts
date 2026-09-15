@@ -75,6 +75,100 @@ export function sonidoClic() {
   osc.stop(ac.currentTime + 0.15);
 }
 
+// --- Melodía infantil de fondo ("Estrellita dónde estás") ---
+
+type Nota = [frecuencia: number, duracion: number];
+
+// Do Re Mi Fa Sol La Si
+const C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23, G4 = 392.0, A4 = 440.0;
+const C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99, A5 = 880.0;
+
+const MELODIA: Nota[] = [
+  [C4, 1], [C4, 1], [G4, 1], [G4, 1], [A4, 1], [A4, 1], [G4, 2],
+  [F4, 1], [F4, 1], [E4, 1], [E4, 1], [D4, 1], [D4, 1], [C4, 2],
+  [G4, 1], [G4, 1], [F4, 1], [F4, 1], [E4, 1], [E4, 1], [D4, 2],
+  [G4, 1], [G4, 1], [F4, 1], [F4, 1], [E4, 1], [E4, 1], [D4, 2],
+  [C4, 1], [C4, 1], [G4, 1], [G4, 1], [A4, 1], [A4, 1], [G4, 2],
+  [F4, 1], [F4, 1], [E4, 1], [E4, 1], [D4, 1], [D4, 1], [C4, 2],
+];
+
+// Acompañamiento suave en segunda voz (una octava por encima, muy bajito)
+const ARPEGIO: Nota[] = [
+  [C5, 0.5], [E5, 0.5], [G5, 0.5], [E5, 0.5],
+  [F5, 0.5], [A5, 0.5], [F5, 0.5], [A5, 0.5],
+  [E5, 0.5], [G5, 0.5], [E5, 0.5], [G5, 0.5],
+  [D5, 0.5], [F5, 0.5], [D5, 0.5], [F5, 0.5],
+];
+
+const TEMPO = 0.42; // segundos por pulso
+let temporizadorMusica: number | null = null;
+let nodoMusica: GainNode | null = null;
+
+function programarNota(ac: AudioContext, salida: AudioNode, freq: number, inicio: number, dur: number, volumen: number) {
+  const osc = ac.createOscillator();
+  const gain = ac.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(freq, inicio);
+  gain.gain.setValueAtTime(0.0001, inicio);
+  gain.gain.exponentialRampToValueAtTime(volumen, inicio + 0.04);
+  gain.gain.setValueAtTime(volumen, inicio + dur * 0.7);
+  gain.gain.exponentialRampToValueAtTime(0.0001, inicio + dur * 0.95);
+  osc.connect(gain).connect(salida);
+  osc.start(inicio);
+  osc.stop(inicio + dur);
+}
+
+function tocarMelodia(ac: AudioContext, salida: AudioNode) {
+  let t = ac.currentTime + 0.05;
+  for (const [freq, pulsos] of MELODIA) {
+    programarNota(ac, salida, freq, t, pulsos * TEMPO, 0.16);
+    t += pulsos * TEMPO;
+  }
+  // Acompañamiento repetido para cubrir toda la melodía
+  let ta = ac.currentTime + 0.05;
+  const duracionTotal = t - ta;
+  while (ta < t - 0.1) {
+    for (const [freq, pulsos] of ARPEGIO) {
+      if (ta >= t - 0.1) break;
+      programarNota(ac, salida, freq, ta, pulsos * TEMPO, 0.05);
+      ta += pulsos * TEMPO;
+    }
+  }
+  return duracionTotal;
+}
+
+/** Inicia la música infantil de fondo en bucle. */
+export function iniciarMusica() {
+  const ac = getCtx();
+  if (!ac || temporizadorMusica !== null) return;
+  nodoMusica = ac.createGain();
+  nodoMusica.gain.value = 1;
+  nodoMusica.connect(ac.destination);
+  const repetir = () => {
+    if (!nodoMusica) return;
+    const duracion = tocarMelodia(ac, nodoMusica);
+    temporizadorMusica = window.setTimeout(repetir, duracion * 1000 + 600);
+  };
+  repetir();
+}
+
+/** Para la música de fondo. */
+export function pararMusica() {
+  if (temporizadorMusica !== null) {
+    window.clearTimeout(temporizadorMusica);
+    temporizadorMusica = null;
+  }
+  if (nodoMusica) {
+    nodoMusica.disconnect();
+    nodoMusica = null;
+  }
+}
+
+/** ¿Está sonando la música? */
+export function musicaActiva() {
+  return temporizadorMusica !== null;
+}
+
 export function hablar(texto: string, alegre = true) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   const u = new SpeechSynthesisUtterance(texto);
