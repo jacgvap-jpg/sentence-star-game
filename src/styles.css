@@ -1,0 +1,172 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Baloo 2", system-ui, sans-serif;
+  --font-sans: "Nunito", system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-fiesta-1: var(--fiesta-1);
+  --color-fiesta-2: var(--fiesta-2);
+  --color-fiesta-3: var(--fiesta-3);
+  --color-fiesta-4: var(--fiesta-4);
+  --shadow-bloque: 0 8px 0 0 var(--sombra-bloque);
+  --shadow-tarjeta: 0 18px 40px -18px oklch(0.45 0.12 260 / 0.45);
+}
+
+:root {
+  --radius: 1rem;
+  --background: oklch(0.97 0.03 220);
+  --foreground: oklch(0.28 0.08 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.28 0.08 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.28 0.08 260);
+  --primary: oklch(0.62 0.19 250);
+  --primary-foreground: oklch(0.99 0.01 250);
+  --secondary: oklch(0.85 0.14 90);
+  --secondary-foreground: oklch(0.3 0.09 70);
+  --muted: oklch(0.93 0.02 230);
+  --muted-foreground: oklch(0.5 0.05 260);
+  --accent: oklch(0.72 0.18 155);
+  --accent-foreground: oklch(0.2 0.06 160);
+  --destructive: oklch(0.6 0.23 25);
+  --destructive-foreground: oklch(0.99 0.01 25);
+  --border: oklch(0.86 0.03 240);
+  --input: oklch(0.86 0.03 240);
+  --ring: oklch(0.62 0.19 250);
+  --fiesta-1: oklch(0.75 0.2 35);
+  --fiesta-2: oklch(0.85 0.17 95);
+  --fiesta-3: oklch(0.72 0.18 155);
+  --fiesta-4: oklch(0.66 0.2 300);
+  --sombra-bloque: oklch(0.45 0.16 255);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background: linear-gradient(
+      180deg,
+      oklch(0.97 0.04 215) 0%,
+      oklch(0.95 0.05 150) 100%
+    );
+    min-height: 100vh;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@utility bloque-palabra {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+@keyframes caer-confeti {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes volar-estrella {
+  0% {
+    transform: translate(0, 0) scale(0.2) rotate(0deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -60vh) scale(1.4) rotate(220deg);
+    opacity: 0;
+  }
+}
+
+@keyframes latido-grande {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes temblor {
+  0%,
+  100% {
+    transform: translateX(0) rotate(-1deg);
+  }
+  25% {
+    transform: translateX(-10px) rotate(1deg);
+  }
+  75% {
+    transform: translateX(10px) rotate(-2deg);
+  }
+}
+
+.confeti {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  height: 18px;
+  border-radius: 3px;
+  animation: caer-confeti linear infinite;
+}
+
+.estrella {
+  position: absolute;
+  font-size: 3rem;
+  color: var(--color-fiesta-2);
+  text-shadow: 0 0 14px oklch(0.85 0.17 95 / 0.9);
+  animation: volar-estrella 2.4s ease-out infinite;
+}
+
+.animar-latido {
+  animation: latido-grande 0.9s ease-in-out infinite;
+}
+
+.animar-temblor {
+  animation: temblor 0.4s ease-in-out 3;
+}
