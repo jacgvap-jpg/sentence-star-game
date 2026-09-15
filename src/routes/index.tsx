@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { OrdenarPalabras } from "@/components/OrdenarPalabras";
 import { NIVELES, NOMBRES, type Nivel } from "@/lib/game-data";
-import { desbloquearAudio, hablar, sonidoClic } from "@/lib/sfx";
+import { desbloquearAudio, hablar, iniciarMusica, sonidoClic } from "@/lib/sfx";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,6 +54,7 @@ function Index() {
                   onClick={() => {
                     desbloquearAudio();
                     sonidoClic();
+                    iniciarMusica();
                     hablar(`¡Hola ${n}! Elige el nivel.`);
                     setNombre(n);
                   }}
