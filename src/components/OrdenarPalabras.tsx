@@ -144,16 +144,34 @@ export function OrdenarPalabras({
         <div>
           <h1 className="text-3xl font-extrabold text-primary sm:text-4xl">Ordenar Palabras</h1>
           <p className="mt-1 text-lg font-bold text-muted-foreground">¡Vamos, {nombre}!</p>
-          <button
-            type="button"
-            onClick={() => {
-              sonidoClic();
-              onCambiarNivel();
-            }}
-            className="mt-2 rounded-xl bg-secondary px-4 py-2 text-base font-extrabold text-secondary-foreground shadow-bloque active:translate-y-1"
-          >
-            {datosNivel.emoji} Nivel {datosNivel.titulo} · cambiar
-          </button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                sonidoClic();
+                onCambiarNivel();
+              }}
+              className="rounded-xl bg-secondary px-4 py-2 text-base font-extrabold text-secondary-foreground shadow-bloque active:translate-y-1"
+            >
+              {datosNivel.emoji} Nivel {datosNivel.titulo} · cambiar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (musica) {
+                  pararMusica();
+                  setMusica(false);
+                } else {
+                  iniciarMusica();
+                  setMusica(true);
+                }
+                sonidoClic();
+              }}
+              className="rounded-xl bg-accent px-4 py-2 text-base font-extrabold text-accent-foreground shadow-bloque active:translate-y-1"
+            >
+              {musica ? "🔇 Silenciar música" : "🎵 Poner música"}
+            </button>
+          </div>
         </div>
         <div
           className={`rounded-2xl border-4 border-primary bg-card px-5 py-3 text-center shadow-tarjeta ${
