@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import triste from "@/assets/triste.png";
 import { Celebracion } from "@/components/Celebracion";
 import { NIVELES, frasesDeNivel, mezclar, type Frase, type Nivel } from "@/lib/game-data";
-import { hablar, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
+import { hablar, iniciarMusica, musicaActiva, pararMusica, sonidoAlarma, sonidoClic, sonidoPalmas } from "@/lib/sfx";
 
 function desordenar(palabras: string[]): string[] {
   const objetivo = palabras.join(" ");
@@ -36,6 +36,7 @@ export function OrdenarPalabras({
   const [estado, setEstado] = useState<Estado>("jugando");
   const [restante, setRestante] = useState(segundosNivel);
   const [seleccion, setSeleccion] = useState<number | null>(null);
+  const [musica, setMusica] = useState(() => musicaActiva());
   const arrastrando = useRef<number | null>(null);
 
   const frase = cola[indice] ?? frasesDeNivel(nivel)[0]!;
